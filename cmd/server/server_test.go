@@ -10,6 +10,7 @@ import (
 	"net"
 	"os"
 	"testing"
+	"time"
 )
 
 func Test_uploadFileToServer(t *testing.T) {
@@ -88,6 +89,7 @@ func Test_downloadFileInServer(t *testing.T) {
 			go handleConn(conn)
 		}
 	}()
+	time.Sleep(time.Second)
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		t.Fatalf("can't connect to %s: %v", addr, err)
