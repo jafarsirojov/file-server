@@ -1,3 +1,3 @@
-module github.com/jafarsirojov/file-server
+module file-server
 
 go 1.13
