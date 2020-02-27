@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"file-server/cmd/rpc"
+	"file-server/pkg/rpc"
 	"io"
 	"io/ioutil"
 	"log"
@@ -40,7 +40,7 @@ func Test_uploadFileToServer(t *testing.T) {
 	if err != nil {
 		t.Fatal("can't write", err)
 	}
-	file, err := ioutil.ReadFile("./testFile/"+options)
+	file, err := ioutil.ReadFile("./testdata/"+options)
 	if err != nil {
 		t.Fatalf("can't read file: %v\n", err)
 	}

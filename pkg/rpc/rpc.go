@@ -41,3 +41,7 @@ func ListServerFile() (listServerFile string, err error) {
 	listServerFile = listServerFile + "\n"
 	return listServerFile, err
 }
+
+const Download  = "download"
+const Upload    = "upload"
+const List  = "list"

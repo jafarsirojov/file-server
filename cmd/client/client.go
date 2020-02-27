@@ -2,7 +2,8 @@ package main
 
 import (
 	"bufio"
-	"file-server/cmd/rpc"
+	"file-server/pkg/rpc"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -10,6 +11,10 @@ import (
 	"net"
 	"os"
 )
+
+var download = flag.String("download", "default", "download")
+var upload   = flag.String("upload", "default", "upload")
+var list     = flag.Bool("list", false, "list")
 
 func main() {
 	logOutput, err := os.OpenFile("logClient.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
@@ -19,14 +24,20 @@ func main() {
 	log.SetOutput(logOutput)
 	defer logOutput.Close()
 
-	args := os.Args[1:]
-	var operations string
-	var options = " "
-	var cmd string
-	operations = args[0]
-	if len(args)>=2 {
-		options = args[1]
+	flag.Parse()
+	var cmd,operations, options string
+	if *download != "default" {
+		options = *download
+		operations = rpc.Download
+	} else if *upload != "default" {
+		options = *upload
+		operations = rpc.Upload
+	} else if *list != false {
+		operations = rpc.List
+	} else {
+		return
 	}
+
 
 	const addr = "localhost:7777"
 	conn, err := net.Dial("tcp", addr)

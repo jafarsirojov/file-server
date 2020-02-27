@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"file-server/cmd/rpc"
+	"file-server/pkg/rpc"
 	"io"
 	"io/ioutil"
 	"log"
@@ -21,7 +21,12 @@ func main() {
 		log.Fatal(err)
 	}
 	log.SetOutput(logOutput)
-	defer logOutput.Close()
+	defer func(){
+		err := logOutput.Close()
+		if err != nil {
+			log.Fatalf("can't close file logOutput: %v\n",err)
+		}
+	}()
 
 	const addr = "0.0.0.0:7777"
 	log.Println("server starting")
@@ -29,7 +34,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("can't listen on %s: %v", addr, err)
 	}
-	defer listener.Close()
+	defer func(){
+		err := listener.Close()
+		if err != nil {
+			log.Fatalf("can't close listener: %v\n",err)
+		}
+	}()
 	log.Println("server started")
 	for {
 		conn, err := listener.Accept()
@@ -70,11 +80,16 @@ func handleConn(conn net.Conn) {
 		listServerFile, err := rpc.ListServerFile()
 		if err != nil {
 			log.Printf("cant list server file %v", err)
-			rpc.WriteLine("Упс! В сервере нет файлов для скачивание)", writer)
+			err := rpc.WriteLine("Упс! В сервере нет файлов для скачивание)", writer)
+			if err != nil {
+				log.Printf("can't write line: %v\n",err)
+			}
 			return
 		}
-		rpc.WriteLine(listServerFile, writer)
-
+		err = rpc.WriteLine(listServerFile, writer)
+		if err != nil {
+			log.Printf("can't write line list server file: %v\n",err)
+		}
 	case "upload":
 		bytes, err := ioutil.ReadAll(reader)
 		if err != nil {
