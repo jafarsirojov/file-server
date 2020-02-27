@@ -44,16 +44,19 @@ func main() {
 	}
 
 	if operations == "upload" {
-		file, err := os.Open(options)
+		file, err := ioutil.ReadFile(options)
 		if err != nil {
 			log.Printf("can't not find the file %s\n", file)
 		}
-		_, err = io.Copy(writer, file)
+		_, err = writer.Write(file)
 		if err != nil {
 			log.Printf("can't copy the file %s\n", file)
 			return
 		}
-		file.Close()
+		err = writer.Flush()
+		if err != nil {
+			log.Fatalf("can't flush %v\n", err)
+		}
 		fmt.Println("Файл успешно загружен в сервер)")
 		return
 	}
